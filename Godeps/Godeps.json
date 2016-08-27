@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/leafo/selfwatch",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
+	"Deps": [
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Rev": "25d045f12a64283630fdedec899655cc5710b683"
+		}
+	]
+}
