@@ -22,18 +22,20 @@ CREATE INDEX ix_keys_created_at ON keys (created_at);
 `
 
 type WatchStorage struct {
-	db *sql.DB
+	fname string
+	db    *sql.DB
 }
 
-func NewWatchStorage() (*WatchStorage, error) {
-	db, err := sql.Open("sqlite3", "test.db")
+func NewWatchStorage(fname string) (*WatchStorage, error) {
+	db, err := sql.Open("sqlite3", fname)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &WatchStorage{
-		db: db,
+		fname: fname,
+		db:    db,
 	}, nil
 }
 
