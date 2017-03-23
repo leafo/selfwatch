@@ -12,6 +12,8 @@ func cleanDb() {
 }
 
 func TestNewStorage(t *testing.T) {
+	cleanDb()
+
 	_, err := NewWatchStorage(testDbName)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -19,6 +21,8 @@ func TestNewStorage(t *testing.T) {
 }
 
 func TestCreateSchema(t *testing.T) {
+	cleanDb()
+
 	storage, err := NewWatchStorage(testDbName)
 	if err != nil {
 		t.Fatal(err.Error())

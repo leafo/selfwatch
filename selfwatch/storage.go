@@ -46,3 +46,7 @@ func (s *WatchStorage) CreateSchema() error {
 	}
 	return nil
 }
+
+func (s *WatchStorage) WriteKeys() error {
+	return nil
+}
