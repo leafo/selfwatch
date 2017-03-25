@@ -21,6 +21,10 @@ import (
 var instance *Recorder
 
 type Recorder struct {
+	KeyPress      func(code int32)
+	KeyRelease    func(code int32)
+	ButtonPress   func(code int32)
+	ButtonRelease func(code int32)
 }
 
 func NewRecorder() *Recorder {
@@ -28,7 +32,8 @@ func NewRecorder() *Recorder {
 		log.Fatal("recorder already exists")
 	}
 
-	return &Recorder{}
+	instance = &Recorder{}
+	return instance
 }
 
 func (recorder *Recorder) Bind() error {
@@ -70,15 +75,31 @@ func (recorder *Recorder) Bind() error {
 
 //export eventCallbackGo
 func eventCallbackGo(eventType C.int, code C.int) {
+	if instance == nil {
+		return
+	}
+
 	switch eventType {
 	case C.KeyPress:
 		fmt.Println("KeyPress", code)
+		if instance.KeyPress != nil {
+			instance.KeyPress(int32(code))
+		}
 	case C.KeyRelease:
 		fmt.Println("KeyRelease", code)
+		if instance.KeyRelease != nil {
+			instance.KeyRelease(int32(code))
+		}
 	case C.ButtonPress:
 		fmt.Println("ButtonPress", code)
+		if instance.ButtonPress != nil {
+			instance.ButtonPress(int32(code))
+		}
 	case C.ButtonRelease:
 		fmt.Println("ButtonRelease", code)
+		if instance.ButtonRelease != nil {
+			instance.ButtonRelease(int32(code))
+		}
 	}
 }
 

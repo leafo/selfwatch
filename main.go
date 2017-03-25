@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	// recorder := selfwatch.NewRecorder()
-	// recorder.Bind()
+	recorder := selfwatch.NewRecorder()
+	recorder.Bind()
 
-	storage, err := selfwatch.NewWatchStorage()
+	storage, err := selfwatch.NewWatchStorage("keys.db")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
