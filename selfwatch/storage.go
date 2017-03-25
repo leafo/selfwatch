@@ -3,6 +3,7 @@ package selfwatch
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -11,10 +12,7 @@ var keysSchema = `
 CREATE TABLE keys (
 	id INTEGER NOT NULL,
 	created_at DATETIME,
-	text BLOB NOT NULL,
-	started DATETIME NOT NULL,
 	nrkeys INTEGER,
-	keys BLOB,
 	PRIMARY KEY (id)
 );
 CREATE INDEX ix_keys_nrkeys ON keys (nrkeys);
@@ -47,6 +45,26 @@ func (s *WatchStorage) CreateSchema() error {
 	return nil
 }
 
-func (s *WatchStorage) WriteKeys() error {
+func (s *WatchStorage) WriteKeys(keys int) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer tx.Commit()
+
+	stmt, err := tx.Prepare("insert into keys(created_at, nrkeys) values(?, ?)")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(time.Now(), keys)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return nil
 }

@@ -7,13 +7,18 @@ import (
 )
 
 func main() {
-	recorder := selfwatch.NewRecorder()
-	recorder.Bind()
-
 	storage, err := selfwatch.NewWatchStorage("keys.db")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	storage.CreateSchema()
+
+	recorder := selfwatch.NewRecorder()
+
+	recorder.KeyRelease = func(code int32) {
+		storage.WriteKeys(1)
+	}
+
+	recorder.Bind()
 }
