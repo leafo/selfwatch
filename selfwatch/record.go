@@ -25,6 +25,7 @@ type Recorder struct {
 	KeyRelease    func(code int32)
 	ButtonPress   func(code int32)
 	ButtonRelease func(code int32)
+	display       *C.Display
 }
 
 func NewRecorder() *Recorder {
@@ -46,6 +47,8 @@ func (recorder *Recorder) Bind() error {
 
 	defer C.XCloseDisplay(dataDisplay)
 	defer C.XCloseDisplay(controlDisplay)
+
+	recorder.display = controlDisplay
 
 	C.XSynchronize(controlDisplay, 1)
 
@@ -69,7 +72,6 @@ func (recorder *Recorder) Bind() error {
 	}
 
 	C.XRecordEnableContext(dataDisplay, rc, (C.XRecordInterceptProc)(unsafe.Pointer(C.event_callback_cgo)), nil)
-	fmt.Println("got to bottom..")
 	return nil
 }
 
@@ -111,4 +113,11 @@ func queryExtension(display *C.Display, name string) bool {
 	defer C.free(unsafe.Pointer(strRecord))
 	res := C.XQueryExtension(display, strRecord, &major, &firstEvent, &firstError)
 	return 1 == int(res)
+}
+
+func (r *Recorder) GetInputFocus() int {
+	var window C.Window
+	var revert C.int
+	C.XGetInputFocus(r.display, &window, &revert)
+	return int(window)
 }
