@@ -115,9 +115,15 @@ func queryExtension(display *C.Display, name string) bool {
 	return 1 == int(res)
 }
 
-func (r *Recorder) GetInputFocus() int {
+func (r *Recorder) GetInputFocus() C.Window {
 	var window C.Window
 	var revert C.int
 	C.XGetInputFocus(r.display, &window, &revert)
-	return int(window)
+	return window
+}
+
+func (r *Recorder) GetWindowAttributes(window C.Window) {
+	var attributes C.XWindowAttributes
+	C.XGetWindowAttributes(r.display, window, &attributes)
+	fmt.Println(attributes)
 }
