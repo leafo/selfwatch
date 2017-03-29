@@ -45,6 +45,18 @@ func (s *WatchStorage) CreateSchema() error {
 	return nil
 }
 
+func (s *WatchStorage) SchemaExists() bool {
+	rows, err := s.db.Query(`SELECT 1 FROM sqlite_master WHERE type='table' AND name='keys';`)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer rows.Close()
+	for rows.Next() {
+		return true
+	}
+	return false
+}
+
 func (s *WatchStorage) WriteKeys(keys int) error {
 	tx, err := s.db.Begin()
 	if err != nil {
