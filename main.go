@@ -12,10 +12,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	storage.CreateSchema()
+	if !storage.SchemaExists() {
+		storage.CreateSchema()
+	}
 
 	recorder := selfwatch.NewRecorder()
-
 	recorder.KeyRelease = func(code int32) {
 		storage.WriteKeys(1)
 	}
