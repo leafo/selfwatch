@@ -92,6 +92,10 @@ func eventCallbackGo(eventType C.int, code C.int) {
 		if instance.KeyRelease != nil {
 			instance.KeyRelease(int32(code))
 		}
+
+		window := instance.GetInputFocus()
+		instance.ListProperties(window)
+
 	case C.ButtonPress:
 		fmt.Println("ButtonPress", code)
 		if instance.ButtonPress != nil {
@@ -126,4 +130,10 @@ func (r *Recorder) GetWindowAttributes(window C.Window) {
 	var attributes C.XWindowAttributes
 	C.XGetWindowAttributes(r.display, window, &attributes)
 	fmt.Println(attributes)
+}
+
+func (r *Recorder) ListProperties(window C.Window) {
+	var numProperties C.int
+	properties := C.XListProperties(r.display, window, &numProperties)
+	fmt.Println(numProperties, properties)
 }
