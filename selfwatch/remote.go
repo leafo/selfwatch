@@ -12,7 +12,7 @@ type RemoteSync struct {
 }
 
 type maxRows struct {
-	max_id int64
+	MaxId int64 `json:"max_id"`
 }
 
 func (s *RemoteSync) GetLastRowId() error {
@@ -28,10 +28,15 @@ func (s *RemoteSync) GetLastRowId() error {
 		return err
 	}
 
-	max := maxRows{}
-	json.Unmarshal(body, &max)
+	var r maxRows
+	log.Print(string(body))
+	err = json.Unmarshal(body, &r)
 
-	log.Print(max)
+	if err != nil {
+		return err
+	}
+
+	log.Print(r.MaxId)
 
 	return nil
 }
