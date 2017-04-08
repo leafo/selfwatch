@@ -80,3 +80,24 @@ func (s *WatchStorage) WriteKeys(keys int) error {
 
 	return nil
 }
+
+func (s *WatchStorage) KeyCountsAfterId(id int64) error {
+	rows, err := s.db.Query(`select nrkeys from keys where id > ?;`, id)
+
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var keys int64
+		err = rows.Scan(&keys)
+		if err != nil {
+			return err
+		}
+		log.Print(keys)
+	}
+
+	return nil
+}
