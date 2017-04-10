@@ -51,3 +51,33 @@ func TestSchemaExists(t *testing.T) {
 		t.Fatal("Schema does not exist but should.")
 	}
 }
+
+func TestInsertKeys(t *testing.T) {
+	cleanDb()
+
+	storage, err := NewWatchStorage(testDbName)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	storage.CreateSchema()
+
+	storage.WriteKeys(5)
+	storage.WriteKeys(2)
+	storage.WriteKeys(6)
+
+	rows, err := storage.db.Query(`select count(*) from keys;`)
+	rows.Next()
+
+	var count int
+	err = rows.Scan(&count)
+
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if count != 3 {
+		t.Fatal("Expected three rows")
+	}
+
+}
