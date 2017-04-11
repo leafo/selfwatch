@@ -15,6 +15,7 @@ import "C"
 import (
 	"fmt"
 	"log"
+	"time"
 	"unsafe"
 )
 
@@ -41,8 +42,11 @@ func (recorder *Recorder) Bind() error {
 	dataDisplay := C.XOpenDisplay(nil)
 	controlDisplay := C.XOpenDisplay(nil)
 
-	if dataDisplay == nil {
-		log.Fatal("Failed to open display")
+	for dataDisplay == nil {
+		log.Print("Failed to open display, trying again in 10s")
+		time.Sleep(time.Second * 10)
+		dataDisplay = C.XOpenDisplay(nil)
+		controlDisplay = C.XOpenDisplay(nil)
 	}
 
 	defer C.XCloseDisplay(dataDisplay)
