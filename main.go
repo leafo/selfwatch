@@ -21,7 +21,7 @@ func main() {
 	last := time.Unix(0, 0)
 
 	recorder := selfwatch.NewRecorder()
-	recorder.KeyRelease = func(code int32) {
+	recorder.KeyRelease = func(event selfwatch.Event) {
 		if time.Now().Sub(last).Seconds() > 60 {
 			storage.WriteKeys(counter)
 			counter = 0

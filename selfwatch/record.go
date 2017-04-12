@@ -15,17 +15,21 @@ import "C"
 import (
 	"fmt"
 	"log"
-	"time"
 	"unsafe"
 )
 
 var instance *Recorder
 
+type Event struct {
+	Code   int32
+	Window int64
+}
+
 type Recorder struct {
-	KeyPress      func(code int32)
-	KeyRelease    func(code int32)
-	ButtonPress   func(code int32)
-	ButtonRelease func(code int32)
+	KeyPress      func(Event)
+	KeyRelease    func(Event)
+	ButtonPress   func(Event)
+	ButtonRelease func(Event)
 	display       *C.Display
 }
 
@@ -42,11 +46,8 @@ func (recorder *Recorder) Bind() error {
 	dataDisplay := C.XOpenDisplay(nil)
 	controlDisplay := C.XOpenDisplay(nil)
 
-	for dataDisplay == nil {
-		log.Print("Failed to open display, trying again in 10s")
-		time.Sleep(time.Second * 10)
-		dataDisplay = C.XOpenDisplay(nil)
-		controlDisplay = C.XOpenDisplay(nil)
+	if dataDisplay == nil {
+		log.Fatal("Failed to open display")
 	}
 
 	defer C.XCloseDisplay(dataDisplay)
@@ -85,30 +86,32 @@ func eventCallbackGo(eventType C.int, code C.int) {
 		return
 	}
 
+	event := Event{
+		Window: int64(instance.GetInputFocus()),
+		Code:   int32(code),
+	}
+
 	switch eventType {
 	case C.KeyPress:
 		fmt.Println("KeyPress", code)
 		if instance.KeyPress != nil {
-			instance.KeyPress(int32(code))
+			instance.KeyPress(event)
 		}
 	case C.KeyRelease:
 		fmt.Println("KeyRelease", code)
 		if instance.KeyRelease != nil {
-			instance.KeyRelease(int32(code))
+			instance.KeyRelease(event)
 		}
-
-		window := instance.GetInputFocus()
-		instance.ListProperties(window)
 
 	case C.ButtonPress:
 		fmt.Println("ButtonPress", code)
 		if instance.ButtonPress != nil {
-			instance.ButtonPress(int32(code))
+			instance.ButtonPress(event)
 		}
 	case C.ButtonRelease:
 		fmt.Println("ButtonRelease", code)
 		if instance.ButtonRelease != nil {
-			instance.ButtonRelease(int32(code))
+			instance.ButtonRelease(event)
 		}
 	}
 }
