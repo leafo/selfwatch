@@ -93,23 +93,23 @@ func eventCallbackGo(eventType C.int, code C.int) {
 
 	switch eventType {
 	case C.KeyPress:
-		fmt.Println("KeyPress", code)
+		//fmt.Println("KeyPress", code)
 		if instance.KeyPress != nil {
 			instance.KeyPress(event)
 		}
 	case C.KeyRelease:
-		fmt.Println("KeyRelease", code)
+		//fmt.Println("KeyRelease", code)
 		if instance.KeyRelease != nil {
 			instance.KeyRelease(event)
 		}
 
 	case C.ButtonPress:
-		fmt.Println("ButtonPress", code)
+		//fmt.Println("ButtonPress", code)
 		if instance.ButtonPress != nil {
 			instance.ButtonPress(event)
 		}
 	case C.ButtonRelease:
-		fmt.Println("ButtonRelease", code)
+		//fmt.Println("ButtonRelease", code)
 		if instance.ButtonRelease != nil {
 			instance.ButtonRelease(event)
 		}

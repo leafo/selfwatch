@@ -19,17 +19,21 @@ func main() {
 
 	counter := 0
 	last := time.Unix(0, 0)
+	var lastWindow int64
 
 	recorder := selfwatch.NewRecorder()
 	recorder.KeyRelease = func(event selfwatch.Event) {
-		if time.Now().Sub(last).Seconds() > 60 {
-			storage.WriteKeys(counter)
-			counter = 0
-			last = time.Now()
-		} else {
-			counter += 1
-		}
+		counter += 1
+		if time.Now().Sub(last).Seconds() > 60 || event.Window != lastWindow {
+			if counter > 0 {
+				log.Println("Flushing....", counter)
+				storage.WriteKeys(counter)
+				counter = 0
+			}
 
+			last = time.Now()
+			lastWindow = event.Window
+		}
 	}
 
 	recorder.Bind()
