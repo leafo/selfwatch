@@ -81,8 +81,14 @@ func (s *WatchStorage) WriteKeys(keys int) error {
 	return nil
 }
 
-func (s *WatchStorage) KeyCountsAfterId(id int64) ([]int, error) {
-	rows, err := s.db.Query(`select nrkeys from keys where id > ?;`, id)
+type rowTuple struct {
+	id         int
+	created_at string
+	nrkeys     string
+}
+
+func (s *WatchStorage) KeyCountsAfterId(id int64) ([]rowTuple, error) {
+	rows, err := s.db.Query(`select id, created_at, nrkeys from keys where id > ?;`, id)
 
 	if err != nil {
 		return nil, err
@@ -90,15 +96,16 @@ func (s *WatchStorage) KeyCountsAfterId(id int64) ([]int, error) {
 
 	defer rows.Close()
 
-	var out []int
+	var out []rowTuple
 
 	for rows.Next() {
-		var keys int
-		err = rows.Scan(&keys)
+		var row rowTuple
+
+		err = rows.Scan(&row.id, &row.created_at, &row.nrkeys)
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, keys)
+		out = append(out, row)
 	}
 
 	return out, nil
