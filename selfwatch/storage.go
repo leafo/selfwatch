@@ -110,3 +110,22 @@ func (s *WatchStorage) KeyCountsAfterId(id int64) ([]rowTuple, error) {
 
 	return out, nil
 }
+
+func (s *WatchStorage) SerializeRecentKeyCounts(id int64) ([][]interface{}, error) {
+	tuples, err := s.KeyCountsAfterId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var out [][]interface{}
+
+	for _, tup := range tuples {
+		var flat []interface{}
+		flat = append(flat, tup.id)
+		flat = append(flat, tup.created_at)
+		flat = append(flat, tup.nrkeys)
+		out = append(out, flat)
+	}
+
+	return out, nil
+}
