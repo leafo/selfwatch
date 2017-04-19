@@ -8,7 +8,8 @@ import (
 )
 
 type RemoteSync struct {
-	Url string
+	Url     string
+	Storage *WatchStorage
 }
 
 type maxRows struct {
@@ -41,6 +42,26 @@ func (s *RemoteSync) GetLastRowId() error {
 	return nil
 }
 
-func (s *RemoteSync) SendRows() error {
+func (s *RemoteSync) SendRows(rows [][]interface{}) error {
+	// TODO: split rows into groups
+	out, err := json.Marshal(rows)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("marshaled:", string(out))
+
 	return nil
+}
+
+func (s *RemoteSync) FlushKeys() error {
+	// TODO: get correct count
+	rows, err := s.Storage.SerializeRecentKeyCounts(1)
+
+	if err != nil {
+		return err
+	}
+
+	return s.SendRows(rows)
 }

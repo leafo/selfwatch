@@ -36,5 +36,13 @@ func main() {
 		}
 	}
 
+	// flush example
+	// remote := selfwatch.RemoteSync{
+	// 	Url:     "http://localhost/put.php",
+	// 	Storage: storage,
+	// }
+
+	// remote.FlushKeys()
+
 	recorder.Bind()
 }
