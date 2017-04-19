@@ -16,17 +16,17 @@ type maxRows struct {
 	MaxId int64 `json:"max_id"`
 }
 
-func (s *RemoteSync) GetLastRowId() error {
+func (s *RemoteSync) GetLastRowId() (int64, error) {
 	resp, err := http.Get(s.Url)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	var r maxRows
@@ -34,12 +34,10 @@ func (s *RemoteSync) GetLastRowId() error {
 	err = json.Unmarshal(body, &r)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	log.Print(r.MaxId)
-
-	return nil
+	return r.MaxId, nil
 }
 
 func (s *RemoteSync) SendRows(rows [][]interface{}) error {
@@ -56,8 +54,8 @@ func (s *RemoteSync) SendRows(rows [][]interface{}) error {
 }
 
 func (s *RemoteSync) FlushKeys() error {
-	// TODO: get correct count
-	rows, err := s.Storage.SerializeRecentKeyCounts(1)
+	maxRowId, err := s.GetLastRowId()
+	rows, err := s.Storage.SerializeRecentKeyCounts(maxRowId)
 
 	if err != nil {
 		return err
