@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 )
 
@@ -67,5 +68,23 @@ func (s *RemoteSync) FlushKeys() error {
 		return err
 	}
 
-	return s.SendRows(rows)
+	chunkSize := 1000
+
+	chunks := int(math.Ceil(float64(len(rows)) / float64(chunkSize)))
+
+	for i := 0; i < chunks; i++ {
+		left := i * chunkSize
+		right := (i + 1) * chunkSize
+		if len(rows) < right {
+			right = len(rows)
+		}
+
+		err = s.SendRows(rows[left:right])
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
 }

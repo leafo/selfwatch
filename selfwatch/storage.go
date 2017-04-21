@@ -92,7 +92,8 @@ func (s *WatchStorage) KeyCountsAfterId(id int64) ([]rowTuple, error) {
 			id,
 			strftime('%d-%m-%Y %H:%M:%S', created_at),
 			nrkeys
-		from keys where id > ?;`, id)
+		from keys where id > ?
+		order by id asc;`, id)
 
 	if err != nil {
 		return nil, err
