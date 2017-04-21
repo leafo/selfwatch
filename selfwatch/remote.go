@@ -1,6 +1,7 @@
 package selfwatch
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -41,14 +42,19 @@ func (s *RemoteSync) GetLastRowId() (int64, error) {
 }
 
 func (s *RemoteSync) SendRows(rows [][]interface{}) error {
-	// TODO: split rows into groups
-	out, err := json.Marshal(rows)
+	payload, err := json.Marshal(rows)
 
 	if err != nil {
 		return err
 	}
 
-	log.Println("marshaled:", string(out))
+	res, err := http.Post(s.Url, "application/json", bytes.NewReader(payload))
+
+	if err != nil {
+		return err
+	}
+
+	res.Body.Close()
 
 	return nil
 }
