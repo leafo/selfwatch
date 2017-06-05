@@ -90,7 +90,7 @@ type rowTuple struct {
 func (s *WatchStorage) KeyCountsAfterId(id int64) ([]rowTuple, error) {
 	rows, err := s.db.Query(`select
 			id,
-			strftime('%d-%m-%Y %H:%M:%S', created_at),
+			strftime('%Y-%m-%d %H:%M:%S', created_at),
 			nrkeys
 		from keys where id > ?
 		order by id asc;`, id)
