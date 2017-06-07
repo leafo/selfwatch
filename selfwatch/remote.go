@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"time"
 )
 
 type RemoteSync struct {
@@ -87,4 +88,13 @@ func (s *RemoteSync) FlushKeys() error {
 	}
 
 	return nil
+}
+
+func (r *RemoteSync) FlushEvery(seconds int) {
+	go func() {
+		for {
+			r.FlushKeys()
+			time.Sleep(60 * time.Second)
+		}
+	}()
 }
