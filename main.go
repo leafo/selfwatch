@@ -38,9 +38,9 @@ func main() {
 	recorder := selfwatch.NewRecorder()
 	recorder.KeyRelease = func(event selfwatch.Event) {
 		counter += 1
-		if time.Now().Sub(last).Seconds() > 60 || event.Window != lastWindow {
+		if time.Now().Sub(last).Seconds() > config.SyncDelay || event.Window != lastWindow {
 			if counter > 0 {
-				log.Println("Flushing....", counter)
+				log.Println("Syncing keys...", counter)
 				storage.WriteKeys(counter)
 				counter = 0
 			}
@@ -50,13 +50,17 @@ func main() {
 		}
 	}
 
-	// flush example
-	// remote := selfwatch.RemoteSync{
-	// 	Url:     "http://localhost/put.php",
-	// 	Storage: storage,
-	// }
+	if config.RemoteUrl != "" {
+		// flush example
+		remote := selfwatch.RemoteSync{
+			Url:     config.RemoteUrl,
+			Storage: storage,
+		}
 
-	// remote.FlushKeys()
+		if config.RemoteFlushDelay > 0 {
+			remote.FlushEvery(config.RemoteFlushDelay)
+		}
+	}
 
 	recorder.Bind()
 }

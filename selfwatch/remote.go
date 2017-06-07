@@ -90,7 +90,7 @@ func (s *RemoteSync) FlushKeys() error {
 	return nil
 }
 
-func (r *RemoteSync) FlushEvery(seconds int) {
+func (r *RemoteSync) FlushEvery(seconds float64) {
 	go func() {
 		for {
 			r.FlushKeys()

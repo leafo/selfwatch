@@ -11,8 +11,8 @@ const DefaultConfigFname = "selfwatch.json"
 type config struct {
 	DbName           string
 	RemoteUrl        string
-	RemoteFlushDelay int
-	SyncDelay        int
+	RemoteFlushDelay float64
+	SyncDelay        float64
 }
 
 var defaultConfig = config{
