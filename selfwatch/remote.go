@@ -90,11 +90,20 @@ func (s *RemoteSync) FlushKeys() error {
 	return nil
 }
 
-func (r *RemoteSync) FlushEvery(seconds float64) {
+func (r *RemoteSync) FlushEvery(seconds float64) chan bool {
+	stop := make(chan bool)
 	go func() {
 		for {
+			select {
+			case <-stop:
+				break
+			default:
+			}
+
 			r.FlushKeys()
 			time.Sleep(60 * time.Second)
 		}
 	}()
+
+	return stop
 }
