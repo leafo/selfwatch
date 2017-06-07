@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configFname, "config", selfwatch.DefaultConfigFname, "Path to json config file (default selfwatch.json)")
+	flag.StringVar(&configFname, "config", selfwatch.DefaultConfigFname, "Path to json config file")
 	flag.BoolVar(&debugOutput, "dump", false, "Print extra debug information")
 }
 
