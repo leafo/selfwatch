@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/leafo/selfwatch/selfwatch"
@@ -37,9 +38,13 @@ func main() {
 
 	switch command {
 	case "summary":
-		err := storage.DailyCounts(7)
+		out, err := storage.DailyCounts(7)
 		if err != nil {
 			log.Fatal(err.Error())
+		}
+
+		for _, row := range out {
+			fmt.Println(row.Day, "\t", row.Count)
 		}
 
 	case "start":
