@@ -29,6 +29,7 @@ func LoadConfig(fname string) *config {
 		return &c
 	}
 
+	log.Print("Loading config ", fname)
 	jsonBlob, err := ioutil.ReadFile(fname)
 	if err == nil {
 		err = json.Unmarshal(jsonBlob, &c)

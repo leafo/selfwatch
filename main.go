@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-	"time"
 
 	"github.com/leafo/selfwatch/selfwatch"
 )
@@ -31,27 +30,10 @@ func main() {
 		storage.CreateSchema()
 	}
 
-	counter := 0
-	last := time.Unix(0, 0)
-	var lastWindow int64
-
 	recorder := selfwatch.NewRecorder()
-	recorder.KeyRelease = func(event selfwatch.Event) {
-		counter += 1
-		if time.Now().Sub(last).Seconds() > config.SyncDelay || event.Window != lastWindow {
-			if counter > 0 {
-				log.Println("Syncing keys...", counter)
-				storage.WriteKeys(counter)
-				counter = 0
-			}
-
-			last = time.Now()
-			lastWindow = event.Window
-		}
-	}
+	storage.BindRecorder(recorder, config.SyncDelay)
 
 	if config.RemoteUrl != "" {
-		// flush example
 		remote := selfwatch.RemoteSync{
 			Url:     config.RemoteUrl,
 			Storage: storage,

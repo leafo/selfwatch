@@ -2,6 +2,7 @@ package selfwatch
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -25,6 +26,7 @@ type WatchStorage struct {
 }
 
 func NewWatchStorage(fname string) (*WatchStorage, error) {
+	log.Print("Loading database ", fname)
 	db, err := sql.Open("sqlite3", fname)
 
 	if err != nil {
@@ -133,4 +135,26 @@ func (s *WatchStorage) SerializeRecentKeyCounts(id int64) ([][]interface{}, erro
 	}
 
 	return out, nil
+}
+
+func (s *WatchStorage) BindRecorder(recorder *Recorder, syncDelay float64) error {
+	counter := 0
+	last := time.Unix(0, 0)
+	var lastWindow int64
+
+	recorder.KeyRelease = func(event Event) {
+		counter += 1
+		if time.Now().Sub(last).Seconds() > syncDelay || event.Window != lastWindow {
+			if counter > 0 {
+				log.Println("Syncing keys...", counter)
+				s.WriteKeys(counter)
+				counter = 0
+			}
+
+			last = time.Now()
+			lastWindow = event.Window
+		}
+	}
+
+	return nil
 }
