@@ -38,7 +38,7 @@ func main() {
 
 	switch command {
 	case "summary":
-		out, err := storage.DailyCounts(7)
+		out, err := storage.DailyCounts(7, config.NewDayHour)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

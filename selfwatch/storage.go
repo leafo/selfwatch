@@ -164,12 +164,14 @@ type DailyCount struct {
 	Count int64
 }
 
-func (s *WatchStorage) DailyCounts(days int) ([]DailyCount, error) {
+func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, error) {
 	rows, err := s.db.Query(`
-		select strftime('%Y-%m-%d', datetime(created_at, 'localtime')), sum(nrkeys)
+		select strftime('%Y-%m-%d',
+			datetime(datetime(created_at, 'localtime'), ?)
+		), sum(nrkeys)
 		from keys where created_at > datetime('now', ?)
 		group by 1;
-	`, fmt.Sprintf("-%v days", days))
+	`, fmt.Sprintf("-%v horus", newDayHour), fmt.Sprintf("-%v days", days))
 
 	if err != nil {
 		return nil, err
