@@ -158,3 +158,33 @@ func (s *WatchStorage) BindRecorder(recorder *Recorder, syncDelay float64) error
 
 	return nil
 }
+
+func (s *WatchStorage) DailyCounts(days int) error {
+	rows, err := s.db.Query(`
+		select strftime('%Y-%m-%d', datetime(created_at, 'localtime')), sum(nrkeys)
+		from keys where created_at > datetime('now', ?)
+		group by 1;
+	`, fmt.Sprintf("-%v days", days))
+
+	if err != nil {
+		return err
+	}
+
+	log.Print("did the query")
+
+	defer rows.Close()
+	for rows.Next() {
+		var day string
+		var count int64
+
+		err = rows.Scan(&day, &count)
+
+		if err != nil {
+			return err
+		}
+
+		log.Print("got row: ", day, " ", count)
+	}
+
+	return nil
+}

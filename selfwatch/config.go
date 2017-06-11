@@ -13,6 +13,7 @@ type config struct {
 	RemoteUrl        string
 	RemoteFlushDelay float64
 	SyncDelay        float64
+	NewDayHour       int
 }
 
 var defaultConfig = config{
@@ -20,6 +21,7 @@ var defaultConfig = config{
 	RemoteUrl:        "",
 	RemoteFlushDelay: 60,
 	SyncDelay:        60,
+	NewDayHour:       4,
 }
 
 func LoadConfig(fname string) *config {

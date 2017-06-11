@@ -30,19 +30,36 @@ func main() {
 		storage.CreateSchema()
 	}
 
-	recorder := selfwatch.NewRecorder()
-	storage.BindRecorder(recorder, config.SyncDelay)
-
-	if config.RemoteUrl != "" {
-		remote := selfwatch.RemoteSync{
-			Url:     config.RemoteUrl,
-			Storage: storage,
-		}
-
-		if config.RemoteFlushDelay > 0 {
-			remote.FlushEvery(config.RemoteFlushDelay)
-		}
+	command := flag.Arg(0)
+	if command == "" {
+		command = "start"
 	}
 
-	recorder.Bind()
+	switch command {
+	case "summary":
+		err := storage.DailyCounts(7)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+	case "start":
+		recorder := selfwatch.NewRecorder()
+		storage.BindRecorder(recorder, config.SyncDelay)
+
+		if config.RemoteUrl != "" {
+			remote := selfwatch.RemoteSync{
+				Url:     config.RemoteUrl,
+				Storage: storage,
+			}
+
+			if config.RemoteFlushDelay > 0 {
+				remote.FlushEvery(config.RemoteFlushDelay)
+			}
+		}
+
+		recorder.Bind()
+	default:
+		log.Fatal("Unknown command:", command)
+	}
+
 }
