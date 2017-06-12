@@ -63,7 +63,7 @@ func main() {
 			byDay[row.Day] = row.Count
 		}
 
-		today := time.Now().Add(time.Hour * time.Duration(config.NewDayHour))
+		today := time.Now().Add(time.Hour * time.Duration(-config.NewDayHour))
 		yesterday := today.Add(time.Hour * -24)
 
 		todaysCount := byDay[dateKey(today)]
