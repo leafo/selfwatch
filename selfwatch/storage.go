@@ -171,7 +171,7 @@ func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, erro
 		), sum(nrkeys)
 		from keys where created_at > datetime('now', ?)
 		group by 1;
-	`, fmt.Sprintf("-%v horus", newDayHour), fmt.Sprintf("-%v days", days))
+	`, fmt.Sprintf("-%v hours", newDayHour), fmt.Sprintf("-%v days", days))
 
 	if err != nil {
 		return nil, err

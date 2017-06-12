@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/leafo/selfwatch/selfwatch"
 )
@@ -46,6 +47,36 @@ func main() {
 		for _, row := range out {
 			fmt.Println(row.Day, "\t", row.Count)
 		}
+
+	case "status":
+		out, err := storage.DailyCounts(7, config.NewDayHour)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		dateKey := func(t time.Time) string {
+			return fmt.Sprintf("%v-%v-%v", t.Year(), fmt.Sprintf("%02d", t.Month()), t.Day())
+		}
+
+		byDay := map[string]int64{}
+		for _, row := range out {
+			byDay[row.Day] = row.Count
+		}
+
+		today := time.Now().Add(time.Hour * time.Duration(config.NewDayHour))
+		yesterday := today.Add(time.Hour * -24)
+
+		todaysCount := byDay[dateKey(today)]
+		yesterdaysCount := byDay[dateKey(yesterday)]
+
+		delta := todaysCount - yesterdaysCount
+
+		p := ""
+		if delta >= 0 {
+			p = "+"
+		}
+
+		fmt.Print(todaysCount, " (", p, delta, ")\n")
 
 	case "start":
 		recorder := selfwatch.NewRecorder()
