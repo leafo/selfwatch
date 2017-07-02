@@ -55,7 +55,10 @@ func main() {
 		}
 
 		dateKey := func(t time.Time) string {
-			return fmt.Sprintf("%v-%v-%v", t.Year(), fmt.Sprintf("%02d", t.Month()), t.Day())
+			return fmt.Sprintf("%v-%v-%v",
+				t.Year(),
+				fmt.Sprintf("%02d", t.Month()),
+				fmt.Sprintf("%02d", t.Day()))
 		}
 
 		byDay := map[string]int64{}
