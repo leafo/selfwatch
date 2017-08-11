@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-const DefaultConfigFname = "selfwatch.json"
+const DefaultConfigFname = "~/.selfwatch/config.json"
 
 type config struct {
 	DbName           string
@@ -17,7 +17,7 @@ type config struct {
 }
 
 var defaultConfig = config{
-	DbName:           "selfwatch.db",
+	DbName:           "~/.selfwatch/selfwatch.db",
 	RemoteUrl:        "",
 	RemoteFlushDelay: 60,
 	SyncDelay:        60,
