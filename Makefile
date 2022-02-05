@@ -1,7 +1,7 @@
-.PHONY: install test
+.PHONY: build test
 
-install:
-	go install github.com/leafo/selfwatch
+build:
+	go build -o bin/selfwatch
 
 test:
-	go test -v github.com/leafo/selfwatch/selfwatch
+	go test -v ./...
