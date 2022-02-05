@@ -3,7 +3,7 @@ package selfwatch
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"math"
 	"net/http"
@@ -26,7 +26,7 @@ func (s *RemoteSync) GetLastRowId() (int64, error) {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return 0, err

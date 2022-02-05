@@ -2,8 +2,8 @@ package selfwatch
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
+	"os"
 )
 
 const DefaultConfigFname = "~/.selfwatch/config.json"
@@ -32,7 +32,7 @@ func LoadConfig(fname string) *config {
 	}
 
 	log.Print("Loading config ", fname)
-	jsonBlob, err := ioutil.ReadFile(fname)
+	jsonBlob, err := os.ReadFile(fname)
 	if err == nil {
 		err = json.Unmarshal(jsonBlob, &c)
 
