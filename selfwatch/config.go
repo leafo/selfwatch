@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 const DefaultConfigFname = "~/.selfwatch/config.json"
@@ -24,12 +25,29 @@ var defaultConfig = config{
 	NewDayHour:       4,
 }
 
+func expandHomePath(path string) (string, error) {
+	if path[:2] == "~/" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(homeDir, path[2:]), nil
+	}
+	return path, nil
+}
+
 func LoadConfig(fname string) *config {
 	c := defaultConfig
 
 	if fname == "" {
 		return &c
 	}
+
+	expandedFname, err := expandHomePath(fname)
+	if err != nil {
+		log.Fatal("Failed to expand config path: ", err.Error())
+	}
+	fname = expandedFname
 
 	log.Print("Loading config ", fname)
 	jsonBlob, err := os.ReadFile(fname)

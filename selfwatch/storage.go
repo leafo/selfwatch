@@ -26,6 +26,11 @@ type WatchStorage struct {
 }
 
 func NewWatchStorage(fname string) (*WatchStorage, error) {
+	expandedFname, err := expandHomePath(fname)
+	if err != nil {
+		return nil, err
+	}
+	fname = expandedFname
 	log.Print("Loading database ", fname)
 	db, err := sql.Open("sqlite3", fname)
 
