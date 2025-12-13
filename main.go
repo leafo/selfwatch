@@ -107,6 +107,7 @@ func main() {
 			}
 		}
 
+		log.Printf("Listening for input events (commit: %s, built: %s)", commitHash, buildDate)
 		recorder.Bind()
 	default:
 		log.Fatal("Unknown command:", command)
