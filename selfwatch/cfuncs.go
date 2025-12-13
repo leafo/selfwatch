@@ -15,7 +15,7 @@ package selfwatch
 #include <X11/keysym.h>
 
 
-void eventCallbackGo();
+void eventCallbackGo(int type, int code);
 
 void event_callback_cgo(XPointer priv, XRecordInterceptData *hook) {
 	if (hook->category != XRecordFromServer) {
