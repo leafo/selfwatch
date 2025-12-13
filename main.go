@@ -12,15 +12,26 @@ import (
 var (
 	configFname string
 	debugOutput bool
+	versionFlag bool
+
+	commitHash string = "dev"
+	buildDate  string = "unknown"
 )
 
 func init() {
 	flag.StringVar(&configFname, "config", selfwatch.DefaultConfigFname, "Path to json config file")
 	flag.BoolVar(&debugOutput, "dump", false, "Print extra debug information")
+	flag.BoolVar(&versionFlag, "version", false, "Print version information")
 }
 
 func main() {
 	flag.Parse()
+
+	if versionFlag {
+		fmt.Printf("selfwatch\n  commit: %s\n  built:  %s\n", commitHash, buildDate)
+		return
+	}
+
 	config := selfwatch.LoadConfig(configFname)
 
 	storage, err := selfwatch.NewWatchStorage(config.DbName)
