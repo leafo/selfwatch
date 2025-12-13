@@ -32,6 +32,8 @@ func main() {
 		return
 	}
 
+	log.Printf("Starting selfwatch (commit: %s, built: %s)", commitHash, buildDate)
+
 	config := selfwatch.LoadConfig(configFname)
 
 	storage, err := selfwatch.NewWatchStorage(config.DbName)
@@ -107,7 +109,7 @@ func main() {
 			}
 		}
 
-		log.Printf("Listening for input events (commit: %s, built: %s)", commitHash, buildDate)
+		log.Print("Listening for input events...")
 		recorder.Bind()
 	default:
 		log.Fatal("Unknown command:", command)
