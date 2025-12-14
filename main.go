@@ -113,7 +113,7 @@ func main() {
 		recorder.Bind()
 
 	case "web":
-		addr := ":8080"
+		addr := "localhost:8080"
 		if flag.NArg() > 1 {
 			addr = flag.Arg(1)
 		}

@@ -25,11 +25,11 @@ Selfwatch includes a built-in web server that provides a dashboard for visualizi
 > selfwatch web [address]
 ```
 
-The default address is `:8080`. You can specify a different address:
+The default address is `localhost:8080`. You can specify a different address:
 
 ```
-> selfwatch web :9000
-> selfwatch web localhost:8080
+> selfwatch web localhost:9000
+> selfwatch web 0.0.0.0:8080
 ```
 
 The dashboard displays:
