@@ -1,3 +1,4 @@
 *.db
-*.json
 bin/
+node_modules/
+selfwatch/web/app.bundle.js

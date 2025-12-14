@@ -1,0 +1,15 @@
+{
+  "name": "selfwatch-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "esbuild frontend/index.jsx --bundle --minify --target=es2020 --outfile=selfwatch/web/app.bundle.js"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.1"
+  }
+}
