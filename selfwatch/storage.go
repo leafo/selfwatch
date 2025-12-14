@@ -174,6 +174,12 @@ type HourlyCount struct {
 	Count int64
 }
 
+type WeeklyHourlyCount struct {
+	Day   string `json:"day"`
+	Hour  int    `json:"hour"`
+	Count int64  `json:"count"`
+}
+
 func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, error) {
 	rows, err := s.db.Query(`
 		select strftime('%Y-%m-%d',
@@ -336,6 +342,46 @@ func (s *WatchStorage) YearlyCounts(year int, newDayHour int) ([]DailyCount, err
 
 		out = append(out, DailyCount{
 			day, count,
+		})
+	}
+
+	return out, nil
+}
+
+func (s *WatchStorage) WeeklyHourlyGrid() ([]WeeklyHourlyCount, error) {
+	rows, err := s.db.Query(`
+		select
+			strftime('%Y-%m-%d', datetime(created_at, 'localtime')) as day,
+			cast(strftime('%H', datetime(created_at, 'localtime')) as integer) as hour,
+			sum(nrkeys)
+		from keys
+		where created_at > datetime('now', '-7 days')
+		group by 1, 2
+		order by 1, 2;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]WeeklyHourlyCount, 0)
+
+	defer rows.Close()
+	for rows.Next() {
+		var day string
+		var hour int
+		var count int64
+
+		err = rows.Scan(&day, &hour, &count)
+
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, WeeklyHourlyCount{
+			Day:   day,
+			Hour:  hour,
+			Count: count,
 		})
 	}
 

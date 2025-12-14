@@ -8,6 +8,7 @@ export default function YearlyActivity() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const newDayHour = window.CONFIG?.newDayHour || 0;
 
     useEffect(() => {
         setLoading(true);
@@ -32,6 +33,9 @@ export default function YearlyActivity() {
         <section className="contribution-section">
             <div className="section-header">
                 <h2>{year} Activity</h2>
+                {newDayHour > 0 && (
+                    <span className="day-hour-indicator">Day starts at {newDayHour}:00</span>
+                )}
                 <div className="year-nav">
                     <button className="year-btn" onClick={() => setYear(y => y - 1)}>&larr;</button>
                     <button className="year-btn" onClick={() => setYear(y => y + 1)} disabled={year >= currentYear}>&rarr;</button>

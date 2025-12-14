@@ -39,6 +39,7 @@ func (ws *WebServer) Start() error {
 	mux.HandleFunc("/api/hourly", ws.handleHourly)
 	mux.HandleFunc("/api/daily", ws.handleDaily)
 	mux.HandleFunc("/api/yearly", ws.handleYearly)
+	mux.HandleFunc("/api/weekly-heatmap", ws.handleWeeklyHeatmap)
 
 	// Parse index.html as template
 	indexContent, err := webAssets.ReadFile("web/index.html")
@@ -127,6 +128,16 @@ func (ws *WebServer) handleYearly(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	counts, err := ws.Storage.YearlyCounts(year, ws.Config.NewDayHour)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(counts)
+}
+
+func (ws *WebServer) handleWeeklyHeatmap(w http.ResponseWriter, r *http.Request) {
+	counts, err := ws.Storage.WeeklyHourlyGrid()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

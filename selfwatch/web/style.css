@@ -146,7 +146,6 @@ h2 {
 }
 
 .hourly-bar { background: #58a6ff; }
-.weekly-bar { background: #a371f7; }
 .monthly-bar { background: #f778ba; }
 
 .contribution-section {
@@ -165,6 +164,13 @@ h2 {
 
 .section-header h2 {
     margin-bottom: 0;
+}
+
+.day-hour-indicator {
+    font-size: 11px;
+    color: #8b949e;
+    margin-left: auto;
+    margin-right: 12px;
 }
 
 .year-nav {
@@ -264,6 +270,74 @@ h2 {
 .legend .day-cell {
     width: 10px;
     height: 10px;
+}
+
+/* Weekly heatmap */
+.weekly-heatmap {
+}
+
+.heatmap-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.heatmap-row {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.heatmap-row.header-row {
+    margin-bottom: 4px;
+}
+
+.hour-label {
+    width: 36px;
+    font-size: 10px;
+    color: #8b949e;
+    text-align: right;
+    padding-right: 6px;
+    flex-shrink: 0;
+}
+
+.day-label {
+    flex: 1;
+    font-size: 10px;
+    color: #8b949e;
+    text-align: center;
+}
+
+.heatmap-cell {
+    flex: 1;
+    height: 14px;
+    border-radius: 2px;
+    background: #161b22;
+    outline: 1px solid rgba(27, 31, 35, 0.06);
+    outline-offset: -1px;
+    position: relative;
+}
+
+.heatmap-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1c2128;
+    border: 1px solid #21262d;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    margin-bottom: 4px;
+    color: #c9d1d9;
+    pointer-events: none;
+}
+
+.heatmap-cell:hover .heatmap-tooltip {
+    display: block;
 }
 
 .build-footer {
