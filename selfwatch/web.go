@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -67,6 +68,11 @@ func (ws *WebServer) handleDaily(w http.ResponseWriter, r *http.Request) {
 
 func (ws *WebServer) handleYearly(w http.ResponseWriter, r *http.Request) {
 	year := time.Now().Year()
+	if yearParam := r.URL.Query().Get("year"); yearParam != "" {
+		if parsed, err := strconv.Atoi(yearParam); err == nil && parsed >= 1970 && parsed <= year {
+			year = parsed
+		}
+	}
 	counts, err := ws.Storage.YearlyCounts(year, ws.Config.NewDayHour)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -119,6 +119,42 @@ h2 {
     padding: 16px;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    margin-bottom: 0;
+}
+
+.year-nav {
+    display: flex;
+    gap: 4px;
+}
+
+.year-btn {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    color: #c9d1d9;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.year-btn:hover:not(:disabled) {
+    background: #30363d;
+}
+
+.year-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 #contribution-grid {
     overflow-x: auto;
     padding-bottom: 8px;
@@ -194,8 +230,7 @@ h2 {
 }
 
 /* Loading state */
-.chart-container.loading,
-#contribution-grid.loading {
+.loading {
     opacity: 0.5;
     pointer-events: none;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BarChart from './components/BarChart';
-import ContributionGrid from './components/ContributionGrid';
+import YearlyActivity from './components/YearlyActivity';
 
 async function fetchData(endpoint) {
     const response = await fetch(endpoint);
@@ -96,7 +96,6 @@ export default function App() {
     const [hourlyData, setHourlyData] = useState(null);
     const [weeklyData, setWeeklyData] = useState(null);
     const [monthlyData, setMonthlyData] = useState(null);
-    const [yearlyData, setYearlyData] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -110,13 +109,7 @@ export default function App() {
                 setMonthlyData(formatMonthlyData(raw));
             })
             .catch(err => setError(err.message));
-
-        fetchData('/api/yearly')
-            .then(raw => setYearlyData(raw))
-            .catch(err => setError(err.message));
     }, []);
-
-    const year = new Date().getFullYear();
 
     return (
         <>
@@ -146,12 +139,7 @@ export default function App() {
                     </div>
                 </section>
 
-                <section className="contribution-section">
-                    <h2>{year} Activity</h2>
-                    <div className={!yearlyData ? 'loading' : ''}>
-                        {yearlyData && <ContributionGrid data={yearlyData} />}
-                    </div>
-                </section>
+                <YearlyActivity />
             </main>
 
             {error && <div style={{ color: 'red', textAlign: 'center' }}>Error: {error}</div>}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
@@ -11,8 +11,7 @@ function getColor(p) {
     return `color-mix(in oklch, #1f2630, #39d353 ${p * 100}%)`;
 }
 
-export default function ContributionGrid({ data }) {
-    const year = new Date().getFullYear();
+export default memo(function ContributionGrid({ data, year }) {
 
     const countByDay = {};
     data.forEach(d => { countByDay[d.Day] = d.Count; });
@@ -106,4 +105,4 @@ export default function ContributionGrid({ data }) {
             </div>
         </>
     );
-}
+});

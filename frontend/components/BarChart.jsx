@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const CHART_HEIGHT = 136;
 
-export default function BarChart({ data, barClass }) {
+export default memo(function BarChart({ data, barClass }) {
     if (!data || data.length === 0) {
         return (
             <div style={{ color: '#8b949e', textAlign: 'center', width: '100%', alignSelf: 'center' }}>
@@ -37,4 +37,4 @@ export default function BarChart({ data, barClass }) {
             })}
         </>
     );
-}
+});
