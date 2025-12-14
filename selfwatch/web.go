@@ -47,7 +47,23 @@ func (ws *WebServer) Start() error {
 }
 
 func (ws *WebServer) handleHourly(w http.ResponseWriter, r *http.Request) {
-	counts, err := ws.Storage.HourlyCounts(24, 0) // No day offset for hourly data
+	var counts []HourlyCount
+	var err error
+
+	// Check for specific date first (e.g., ?date=2024-12-10)
+	if dateParam := r.URL.Query().Get("date"); dateParam != "" {
+		counts, err = ws.Storage.HourlyCountsForDate(dateParam)
+	} else {
+		// Fall back to offset-based query
+		offset := 0
+		if offsetParam := r.URL.Query().Get("offset"); offsetParam != "" {
+			if parsed, err := strconv.Atoi(offsetParam); err == nil && parsed >= 0 {
+				offset = parsed
+			}
+		}
+		counts, err = ws.Storage.HourlyCounts(24, offset)
+	}
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

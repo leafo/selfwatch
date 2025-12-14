@@ -208,15 +208,75 @@ func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, erro
 	return out, nil
 }
 
-func (s *WatchStorage) HourlyCounts(hours int, newDayHour int) ([]HourlyCount, error) {
+func (s *WatchStorage) HourlyCounts(hours int, dayOffset int) ([]HourlyCount, error) {
+	// dayOffset: 0 = current period, 1 = previous 24h, etc.
+	startHours := hours + (dayOffset * 24)
+
+	var rows *sql.Rows
+	var err error
+
+	if dayOffset == 0 {
+		// Current period: no upper bound needed
+		rows, err = s.db.Query(`
+			select strftime('%Y-%m-%d %H',
+				datetime(created_at, 'localtime')
+			), sum(nrkeys)
+			from keys
+			where created_at > datetime('now', 'localtime', ?)
+			group by 1
+			order by 1;
+		`, fmt.Sprintf("-%v hours", startHours))
+	} else {
+		// Historical period: need both bounds
+		endHours := dayOffset * 24
+		rows, err = s.db.Query(`
+			select strftime('%Y-%m-%d %H',
+				datetime(created_at, 'localtime')
+			), sum(nrkeys)
+			from keys
+			where created_at > datetime('now', 'localtime', ?)
+			  and created_at <= datetime('now', 'localtime', ?)
+			group by 1
+			order by 1;
+		`, fmt.Sprintf("-%v hours", startHours), fmt.Sprintf("-%v hours", endHours))
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]HourlyCount, 0)
+
+	defer rows.Close()
+	for rows.Next() {
+		var hour string
+		var count int64
+
+		err = rows.Scan(&hour, &count)
+
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, HourlyCount{
+			hour, count,
+		})
+	}
+
+	return out, nil
+}
+
+func (s *WatchStorage) HourlyCountsForDate(date string) ([]HourlyCount, error) {
+	// date format: "2024-12-10"
 	rows, err := s.db.Query(`
 		select strftime('%Y-%m-%d %H',
-			datetime(datetime(created_at, 'localtime'), ?)
+			datetime(created_at, 'localtime')
 		), sum(nrkeys)
-		from keys where created_at > datetime('now', ?)
+		from keys
+		where date(created_at, 'localtime') = ?
 		group by 1
 		order by 1;
-	`, fmt.Sprintf("-%v hours", newDayHour), fmt.Sprintf("-%v hours", hours))
+	`, date)
 
 	if err != nil {
 		return nil, err
