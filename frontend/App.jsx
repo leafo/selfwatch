@@ -159,6 +159,15 @@ export default function App() {
             </main>
 
             {error && <div style={{ color: 'red', textAlign: 'center' }}>Error: {error}</div>}
+
+            <footer className="build-footer">
+                {window.BUILD_INFO?.commit && (
+                    <span>
+                        {window.BUILD_INFO.commit}
+                        {window.BUILD_INFO.date && ` · ${window.BUILD_INFO.date}`}
+                    </span>
+                )}
+            </footer>
         </>
     );
 }

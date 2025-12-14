@@ -117,7 +117,7 @@ func main() {
 		if flag.NArg() > 1 {
 			addr = flag.Arg(1)
 		}
-		server := selfwatch.NewWebServer(storage, config, addr)
+		server := selfwatch.NewWebServer(storage, config, addr, commitHash, buildDate)
 		log.Fatal(server.Start())
 
 	default:

@@ -3,6 +3,7 @@ package selfwatch
 import (
 	"embed"
 	"encoding/json"
+	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
@@ -17,13 +18,17 @@ type WebServer struct {
 	Storage    *WatchStorage
 	Config     *config
 	ListenAddr string
+	CommitHash string
+	BuildDate  string
 }
 
-func NewWebServer(storage *WatchStorage, cfg *config, addr string) *WebServer {
+func NewWebServer(storage *WatchStorage, cfg *config, addr, commitHash, buildDate string) *WebServer {
 	return &WebServer{
 		Storage:    storage,
 		Config:     cfg,
 		ListenAddr: addr,
+		CommitHash: commitHash,
+		BuildDate:  buildDate,
 	}
 }
 
@@ -35,12 +40,32 @@ func (ws *WebServer) Start() error {
 	mux.HandleFunc("/api/daily", ws.handleDaily)
 	mux.HandleFunc("/api/yearly", ws.handleYearly)
 
-	// Static files
+	// Parse index.html as template
+	indexContent, err := webAssets.ReadFile("web/index.html")
+	if err != nil {
+		return err
+	}
+	indexTmpl, err := template.New("index").Parse(string(indexContent))
+	if err != nil {
+		return err
+	}
+
+	// Static files (for CSS, JS, etc.)
 	webFS, err := fs.Sub(webAssets, "web")
 	if err != nil {
 		return err
 	}
-	mux.Handle("/", http.FileServer(http.FS(webFS)))
+	fileServer := http.FileServer(http.FS(webFS))
+
+	// Handle root with template, other files with file server
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			indexTmpl.Execute(w, ws)
+		} else {
+			fileServer.ServeHTTP(w, r)
+		}
+	})
 
 	log.Printf("Starting web dashboard at http://%s", ws.ListenAddr)
 	return http.ListenAndServe(ws.ListenAddr, mux)
