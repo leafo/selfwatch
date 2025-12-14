@@ -111,6 +111,15 @@ func main() {
 
 		log.Print("Listening for input events...")
 		recorder.Bind()
+
+	case "web":
+		addr := ":8080"
+		if flag.NArg() > 1 {
+			addr = flag.Arg(1)
+		}
+		server := selfwatch.NewWebServer(storage, config, addr)
+		log.Fatal(server.Start())
+
 	default:
 		log.Fatal("Unknown command:", command)
 	}

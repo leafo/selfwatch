@@ -169,6 +169,11 @@ type DailyCount struct {
 	Count int64
 }
 
+type HourlyCount struct {
+	Hour  string
+	Count int64
+}
+
 func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, error) {
 	rows, err := s.db.Query(`
 		select strftime('%Y-%m-%d',
@@ -177,6 +182,80 @@ func (s *WatchStorage) DailyCounts(days int, newDayHour int) ([]DailyCount, erro
 		from keys where created_at > datetime('now', ?)
 		group by 1;
 	`, fmt.Sprintf("-%v hours", newDayHour), fmt.Sprintf("-%v days", days))
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]DailyCount, 0)
+
+	defer rows.Close()
+	for rows.Next() {
+		var day string
+		var count int64
+
+		err = rows.Scan(&day, &count)
+
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, DailyCount{
+			day, count,
+		})
+	}
+
+	return out, nil
+}
+
+func (s *WatchStorage) HourlyCounts(hours int, newDayHour int) ([]HourlyCount, error) {
+	rows, err := s.db.Query(`
+		select strftime('%Y-%m-%d %H',
+			datetime(datetime(created_at, 'localtime'), ?)
+		), sum(nrkeys)
+		from keys where created_at > datetime('now', ?)
+		group by 1
+		order by 1;
+	`, fmt.Sprintf("-%v hours", newDayHour), fmt.Sprintf("-%v hours", hours))
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]HourlyCount, 0)
+
+	defer rows.Close()
+	for rows.Next() {
+		var hour string
+		var count int64
+
+		err = rows.Scan(&hour, &count)
+
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, HourlyCount{
+			hour, count,
+		})
+	}
+
+	return out, nil
+}
+
+func (s *WatchStorage) YearlyCounts(year int, newDayHour int) ([]DailyCount, error) {
+	startDate := fmt.Sprintf("%d-01-01", year)
+	endDate := fmt.Sprintf("%d-12-31", year)
+
+	rows, err := s.db.Query(`
+		select strftime('%Y-%m-%d',
+			datetime(datetime(created_at, 'localtime'), ?)
+		), sum(nrkeys)
+		from keys
+		where date(datetime(created_at, 'localtime'), ?) between ? and ?
+		group by 1
+		order by 1;
+	`, fmt.Sprintf("-%v hours", newDayHour), fmt.Sprintf("-%v hours", newDayHour), startDate, endDate)
 
 	if err != nil {
 		return nil, err

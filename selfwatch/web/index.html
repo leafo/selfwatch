@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>selfwatch Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>selfwatch</h1>
+    </header>
+
+    <main>
+        <section class="chart-section">
+            <h2>Last 24 Hours</h2>
+            <div class="chart-container" id="hourly-chart"></div>
+        </section>
+
+        <section class="chart-section">
+            <h2>Last 7 Days</h2>
+            <div class="chart-container" id="weekly-chart"></div>
+        </section>
+
+        <section class="chart-section">
+            <h2>Last 30 Days</h2>
+            <div class="chart-container" id="monthly-chart"></div>
+        </section>
+
+        <section class="contribution-section">
+            <h2 id="year-title">Activity</h2>
+            <div id="contribution-grid"></div>
+            <div class="legend" id="contribution-legend"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
