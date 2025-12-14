@@ -38,6 +38,43 @@ h2 {
     letter-spacing: 0.5px;
 }
 
+.header-stats {
+    display: flex;
+    gap: 32px;
+}
+
+.stat-item {
+    text-align: right;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #f0f6fc;
+    line-height: 1.2;
+}
+
+.stat-delta {
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.stat-delta.positive {
+    color: #3fb950;
+}
+
+.stat-delta.negative {
+    color: #f85149;
+}
+
 .chart-section {
     background: #161b22;
     border: 1px solid #21262d;

@@ -66,6 +66,28 @@ function formatMonthlyData(rawData) {
     return data;
 }
 
+function calculateStats(monthlyData) {
+    if (!monthlyData || monthlyData.length < 30) return null;
+
+    const today = monthlyData[29].count;
+    const yesterday = monthlyData[28].count;
+
+    const thisWeek = monthlyData.slice(23).reduce((sum, d) => sum + d.count, 0);
+    const lastWeek = monthlyData.slice(16, 23).reduce((sum, d) => sum + d.count, 0);
+
+    return {
+        today,
+        todayDelta: today - yesterday,
+        thisWeek,
+        weekDelta: thisWeek - lastWeek
+    };
+}
+
+function formatDelta(delta) {
+    if (delta > 0) return `+${delta.toLocaleString()}`;
+    return delta.toLocaleString();
+}
+
 export default function App() {
     const [weeklyData, setWeeklyData] = useState(null);
     const [monthlyData, setMonthlyData] = useState(null);
@@ -81,10 +103,30 @@ export default function App() {
             .catch(err => setError(err.message));
     }, []);
 
+    const stats = calculateStats(monthlyData);
+
     return (
         <>
             <header>
                 <h1>selfwatch</h1>
+                {stats && (
+                    <div className="header-stats">
+                        <div className="stat-item">
+                            <div className="stat-label">Today</div>
+                            <div className="stat-value">{stats.today.toLocaleString()}</div>
+                            <div className={`stat-delta ${stats.todayDelta >= 0 ? 'positive' : 'negative'}`}>
+                                {formatDelta(stats.todayDelta)}
+                            </div>
+                        </div>
+                        <div className="stat-item">
+                            <div className="stat-label">This Week</div>
+                            <div className="stat-value">{stats.thisWeek.toLocaleString()}</div>
+                            <div className={`stat-delta ${stats.weekDelta >= 0 ? 'positive' : 'negative'}`}>
+                                {formatDelta(stats.weekDelta)}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </header>
 
             <main>
