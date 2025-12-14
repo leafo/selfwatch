@@ -7,17 +7,8 @@ function getColor(p) {
     if (p <= 0) {
         return '#161b22';
     }
-
     p = Math.min(1, Math.max(0, p));
-
-    const low = { r: 14, g: 68, b: 41 };
-    const high = { r: 57, g: 211, b: 83 };
-
-    const r = Math.round(low.r + (high.r - low.r) * p);
-    const g = Math.round(low.g + (high.g - low.g) * p);
-    const b = Math.round(low.b + (high.b - low.b) * p);
-
-    return `rgb(${r}, ${g}, ${b})`;
+    return `color-mix(in oklch, #1f2630, #39d353 ${p * 100}%)`;
 }
 
 export default function ContributionGrid({ data }) {
@@ -64,7 +55,7 @@ export default function ContributionGrid({ data }) {
             if (currentDate.getFullYear() === year) {
                 const dateStr = currentDate.toISOString().split('T')[0];
                 const count = countByDay[dateStr] || 0;
-                const scaled = count > 0 ? Math.log(count) / Math.log(maxCount) : 0;
+                const scaled = count / maxCount;
                 const title = `${currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}: ${count.toLocaleString()} keys`;
 
                 cells.push(
