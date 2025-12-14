@@ -33,7 +33,7 @@ export default memo(function WeeklyHeatmap() {
     // Build lookup: { "2024-12-10": { 0: 123, 1: 456, ... } }
     const countByDayHour = {};
     let maxCount = 1;
-    data.forEach(d => {
+    data.data.forEach(d => {
         if (!countByDayHour[d.day]) {
             countByDayHour[d.day] = {};
         }
@@ -41,11 +41,12 @@ export default memo(function WeeklyHeatmap() {
         if (d.count > maxCount) maxCount = d.count;
     });
 
-    // Get last 7 days in order (using local time to match backend)
+    // Build days array from server-provided date range
     const days = [];
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
+    const startDate = new Date(data.startDate + 'T00:00:00');
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');

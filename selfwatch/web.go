@@ -137,11 +137,11 @@ func (ws *WebServer) handleYearly(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ws *WebServer) handleWeeklyHeatmap(w http.ResponseWriter, r *http.Request) {
-	counts, err := ws.Storage.WeeklyHourlyGrid()
+	response, err := ws.Storage.WeeklyHourlyGrid()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(counts)
+	json.NewEncoder(w).Encode(response)
 }

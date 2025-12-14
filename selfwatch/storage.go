@@ -348,7 +348,17 @@ func (s *WatchStorage) YearlyCounts(year int, newDayHour int) ([]DailyCount, err
 	return out, nil
 }
 
-func (s *WatchStorage) WeeklyHourlyGrid() ([]WeeklyHourlyCount, error) {
+type WeeklyHeatmapResponse struct {
+	StartDate string              `json:"startDate"`
+	EndDate   string              `json:"endDate"`
+	Data      []WeeklyHourlyCount `json:"data"`
+}
+
+func (s *WatchStorage) WeeklyHourlyGrid() (*WeeklyHeatmapResponse, error) {
+	now := time.Now()
+	endDate := now.Format("2006-01-02")
+	startDate := now.AddDate(0, 0, -6).Format("2006-01-02")
+
 	rows, err := s.db.Query(`
 		select
 			strftime('%Y-%m-%d', datetime(created_at, 'localtime')) as day,
@@ -364,7 +374,7 @@ func (s *WatchStorage) WeeklyHourlyGrid() ([]WeeklyHourlyCount, error) {
 		return nil, err
 	}
 
-	out := make([]WeeklyHourlyCount, 0)
+	data := make([]WeeklyHourlyCount, 0)
 
 	defer rows.Close()
 	for rows.Next() {
@@ -378,12 +388,16 @@ func (s *WatchStorage) WeeklyHourlyGrid() ([]WeeklyHourlyCount, error) {
 			return nil, err
 		}
 
-		out = append(out, WeeklyHourlyCount{
+		data = append(data, WeeklyHourlyCount{
 			Day:   day,
 			Hour:  hour,
 			Count: count,
 		})
 	}
 
-	return out, nil
+	return &WeeklyHeatmapResponse{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Data:      data,
+	}, nil
 }
