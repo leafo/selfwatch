@@ -52,22 +52,22 @@ func (s *WatchStorage) CreateSchema() error {
 	return nil
 }
 
-func (s *WatchStorage) SchemaExists() bool {
+func (s *WatchStorage) SchemaExists() (bool, error) {
 	rows, err := s.db.Query(`SELECT 1 FROM sqlite_master WHERE type='table' AND name='keys';`)
 	if err != nil {
-		log.Fatal(err.Error())
+		return false, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 }
 
 func (s *WatchStorage) WriteKeys(keys int) error {
 	tx, err := s.db.Begin()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer tx.Commit()
@@ -75,17 +75,13 @@ func (s *WatchStorage) WriteKeys(keys int) error {
 	stmt, err := tx.Prepare("insert into keys(created_at, nrkeys) values(?, ?)")
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer stmt.Close()
 
 	_, err = stmt.Exec(time.Now(), keys)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return nil
+	return err
 }
 
 type rowTuple struct {
@@ -152,7 +148,9 @@ func (s *WatchStorage) BindRecorder(recorder *Recorder, syncDelay float64) error
 		if time.Now().Sub(last).Seconds() > syncDelay || event.Window != lastWindow {
 			if counter > 0 {
 				log.Println("Syncing keys...", counter)
-				s.WriteKeys(counter)
+				if err := s.WriteKeys(counter); err != nil {
+					log.Printf("Error writing keys: %v", err)
+				}
 				counter = 0
 			}
 

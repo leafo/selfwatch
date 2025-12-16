@@ -43,11 +43,19 @@ func TestSchemaExists(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	if storage.SchemaExists() {
+	exists, err := storage.SchemaExists()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if exists {
 		t.Fatal("Schema exists when it shouldn't yet.")
 	}
 	storage.CreateSchema()
-	if !storage.SchemaExists() {
+	exists, err = storage.SchemaExists()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !exists {
 		t.Fatal("Schema does not exist but should.")
 	}
 }
@@ -62,9 +70,15 @@ func TestInsertKeys(t *testing.T) {
 
 	storage.CreateSchema()
 
-	storage.WriteKeys(5)
-	storage.WriteKeys(2)
-	storage.WriteKeys(6)
+	if err = storage.WriteKeys(5); err != nil {
+		t.Fatal(err.Error())
+	}
+	if err = storage.WriteKeys(2); err != nil {
+		t.Fatal(err.Error())
+	}
+	if err = storage.WriteKeys(6); err != nil {
+		t.Fatal(err.Error())
+	}
 
 	rows, err := storage.db.Query(`select count(*) from keys;`)
 	rows.Next()

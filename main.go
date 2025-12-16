@@ -41,7 +41,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	if !storage.SchemaExists() {
+	exists, err := storage.SchemaExists()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	if !exists {
 		storage.CreateSchema()
 	}
 
