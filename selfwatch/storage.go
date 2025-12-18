@@ -38,10 +38,51 @@ func NewWatchStorage(fname string) (*WatchStorage, error) {
 		return nil, err
 	}
 
-	return &WatchStorage{
+	storage := &WatchStorage{
 		fname: fname,
 		db:    db,
-	}, nil
+	}
+
+	// Log last key press if available
+	if lastPress, lastId, err := storage.GetLastKeyPress(); err == nil && lastPress != nil {
+		ago := time.Since(*lastPress)
+		log.Printf("Last key press: %s (%s ago), ~%d rows", lastPress.Local().Format("2006-01-02 15:04:05"), formatDuration(ago), lastId)
+	}
+
+	return storage, nil
+}
+
+func formatDuration(d time.Duration) string {
+	if d < time.Minute {
+		return fmt.Sprintf("%d seconds", int(d.Seconds()))
+	} else if d < time.Hour {
+		return fmt.Sprintf("%d minutes", int(d.Minutes()))
+	} else if d < 24*time.Hour {
+		hours := int(d.Hours())
+		if hours == 1 {
+			return "1 hour"
+		}
+		return fmt.Sprintf("%d hours", hours)
+	} else {
+		days := int(d.Hours() / 24)
+		if days == 1 {
+			return "1 day"
+		}
+		return fmt.Sprintf("%d days", days)
+	}
+}
+
+func (s *WatchStorage) GetLastKeyPress() (*time.Time, int64, error) {
+	var createdAt time.Time
+	var id int64
+	err := s.db.QueryRow(`SELECT id, created_at FROM keys ORDER BY id DESC LIMIT 1`).Scan(&id, &createdAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, 0, nil
+		}
+		return nil, 0, err
+	}
+	return &createdAt, id, nil
 }
 
 func (s *WatchStorage) CreateSchema() error {
