@@ -36,6 +36,15 @@ func expandHomePath(path string) (string, error) {
 	return path, nil
 }
 
+func (c *config) DbExists() bool {
+	dbPath, err := expandHomePath(c.DbName)
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(dbPath)
+	return err == nil
+}
+
 func LoadConfig(fname string) *config {
 	c := defaultConfig
 

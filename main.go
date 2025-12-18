@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/leafo/selfwatch/selfwatch"
@@ -36,6 +37,17 @@ func main() {
 
 	config := selfwatch.LoadConfig(configFname)
 
+	command := flag.Arg(0)
+	if command == "" {
+		command = "start"
+	}
+
+	// For status command, fail if database doesn't exist
+	if command == "status" && !config.DbExists() {
+		fmt.Fprintf(os.Stderr, "Database not found: %s\n", config.DbName)
+		os.Exit(1)
+	}
+
 	storage, err := selfwatch.NewWatchStorage(config.DbName)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -47,11 +59,6 @@ func main() {
 	}
 	if !exists {
 		storage.CreateSchema()
-	}
-
-	command := flag.Arg(0)
-	if command == "" {
-		command = "start"
 	}
 
 	switch command {
