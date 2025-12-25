@@ -1,4 +1,4 @@
-.PHONY: build install test bundle
+.PHONY: build install test bundle release
 
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 BUILD_DATE := $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
@@ -15,3 +15,6 @@ install: bundle
 
 test:
 	go test -v ./...
+
+release:
+	gh release create "$$(date +%Y-%m-%d)" --generate-notes --title "Release $$(date +%Y-%m-%d)"
